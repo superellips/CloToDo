@@ -1,4 +1,5 @@
 using CloToDo.Models;
+using CloToDo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,23 +8,18 @@ namespace CloToDo.Pages;
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
+    private readonly ITodoService _todoService;
     public List<TodoItem> TodoItems { get; set; } = [];
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public IndexModel(ILogger<IndexModel> logger, ITodoService todoService)
     {
         _logger = logger;
+        _todoService = todoService;
     }
 
-    public void OnGet()
+    public async void OnGet()
     {
-        Console.WriteLine("Hello World!");
-        TodoItems = new List<TodoItem>
-        {
-            new TodoItem { Id = Guid.NewGuid(), Description = "Learn C#", IsComplete = false },
-            new TodoItem { Id = Guid.NewGuid(), Description = "Build apps", IsComplete = true },
-            new TodoItem { Id = Guid.NewGuid(), Description = "Make money", IsComplete = false },
-            new TodoItem { Id = Guid.NewGuid(), Description = "Retire", IsComplete = false }
-        };
-
+        // Use the ITodoService to get all the TodoItems
+        TodoItems = await _todoService.GetAllAsync();
     }
 }
