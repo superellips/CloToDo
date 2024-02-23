@@ -14,7 +14,8 @@
 <h3>ToDo List</h3>
 
 <ul>
-    <li class="todo-item">Buy groceries</li>
-    <li class="todo-item done">Submit project report</li> 
-    <li class="todo-item">Schedule dentist appointment</li> 
+    @foreach (var item in Model.TodoItems)
+    {
+        <li>@item.Description</li>
+    }
 </ul>
