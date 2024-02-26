@@ -4,10 +4,10 @@ namespace CloToDo.Services;
 
 public interface ITodoService
 {
-        // Task<TodoItem> GetByIdAsync(Guid id);
-        Task<List<TodoItem>> GetAllAsync();
-        // Task AddAsync(TodoItem todo);
-        // Task UpdateAsync(TodoItem todo);
-        // Task DeleteByIdAsync(Guid id);
-    }
+    Task<IEnumerable<TodoItem>> GetAllAsync();
+    Task<TodoItem> GetByIdAsync(Guid id);
+    Task<TodoItem> CreateAsync(TodoItem item);
+    Task<TodoItem> UpdateAsync(Guid id, TodoItem item);
+    Task<TodoItem> DeleteAsync(Guid id);
+}
     

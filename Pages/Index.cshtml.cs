@@ -9,7 +9,7 @@ public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
     private readonly ITodoService _todoService;
-    public List<TodoItem> TodoItems { get; set; } = [];
+    public IEnumerable<TodoItem> TodoItems { get; set; } = [];
 
     public IndexModel(ILogger<IndexModel> logger, ITodoService todoService)
     {
@@ -17,9 +17,12 @@ public class IndexModel : PageModel
         _todoService = todoService;
     }
 
-    public async void OnGet()
+    public async Task<IActionResult> OnGetAsync()
     {
         // Use the ITodoService to get all the TodoItems
         TodoItems = await _todoService.GetAllAsync();
+
+        // Return the Page with the list of TodoItems
+        return Page();
     }
 }

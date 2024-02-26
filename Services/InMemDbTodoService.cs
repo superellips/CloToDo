@@ -1,68 +1,132 @@
+/// <summary>
+/// Represents an in-memory database implementation of the ITodoService interface.
+/// This class provides methods to perform CRUD operations on a collection of TodoItems.
+/// 
+/// 1. It simulates asynchronous operations using the Task-based Asynchronous Pattern (TAP).
+/// 2. It locks the list of TodoItems to ensure thread safety.
+/// 3. It copies the TodoItems to ensure immutability.
+/// 
+/// The InMemDbTodoService class should be registered as Singleton in the DI container.
+/// 
+/// Error handling: KeyNotFoundException is thrown when a TodoItem with the specified Id is not found.
+/// 
+/// </summary>
+
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using CloToDo.Models;
 
 namespace CloToDo.Services;
 
 public class InMemDbTodoService : ITodoService
 {
-    private List<TodoItem> _todos;
+    private readonly List<TodoItem> _todos;
+    private readonly object _lock = new(); // For thread safety
 
     public InMemDbTodoService()
     {
-        _todos = new List<TodoItem>()
-        {
-            new TodoItem { Id = Guid.NewGuid(), Description = "Learn more C#", IsComplete = false },
-            new TodoItem { Id = Guid.NewGuid(), Description = "Build better apps", IsComplete = true },
-            new TodoItem { Id = Guid.NewGuid(), Description = "Make more money", IsComplete = false },
-            new TodoItem { Id = Guid.NewGuid(), Description = "Retire earlier", IsComplete = false }
-        };
+        _todos =
+        [
+            new() { Id = Guid.NewGuid(), Title = "Learn C#", IsComplete = false },
+            new() { Id = Guid.NewGuid(), Title = "Learn Azure", IsComplete = true },
+            new() { Id = Guid.NewGuid(), Title = "Build apps for the cloud", IsComplete = false }
+        ];
     }
 
-    public Task<List<TodoItem>> GetAllAsync()
+    public async Task<IEnumerable<TodoItem>> GetAllAsync()
     {
-        return Task.FromResult(_todos);
+        // Lock the list of TodoItems to ensure thread safety
+        var todoList = new List<TodoItem>();
+        lock (_lock)
+        {
+            // Copy the list of TodoItems to ensure immutability
+            foreach (var originalTodoItem in _todos)
+            {
+                var todo = new TodoItem
+                {
+                    Id = originalTodoItem.Id,
+                    Title = originalTodoItem.Title,
+                    IsComplete = originalTodoItem.IsComplete
+                };
+                todoList.Add(todo);
+            }
+        }
+
+        // Return a copy of the list of TodoItems to ensure immutability
+        return await Task.FromResult(todoList);
     }
 
-//     public TodoItem GetByIdAsync(Guid id)
-//     {
-//         return _todos.Find(todo => todo.Id == id) ?? new TodoItem();
-//     }
+    public async Task<TodoItem> GetByIdAsync(Guid id)
+    {
+        // Lock the list of TodoItems to ensure thread safety
+        var todo = new TodoItem();
+        lock (_lock)
+        {
+            // Copy the TodoItem with the specified Id to ensure immutability
+            var originalTodo = _todos.FirstOrDefault(t => t.Id == id) ?? throw new KeyNotFoundException($"TodoItem with Id {id} not found");
+            todo.Id = originalTodo.Id;
+            todo.Title = originalTodo.Title;
+            todo.IsComplete = originalTodo.IsComplete;
+        }
 
-//     public void AddTodoItem(TodoItem todo)
-//     {
-//         if (todo == null)
-//         {
-//             throw new ArgumentNullException(nameof(todo));
-//         }
+        // Return a copy of the TodoItem to ensure immutability
+        return await Task.FromResult(todo);
+    }
 
-//         todo.Id = _todos.Count + 1;
-//         _todos.Add(todo);
-//     }
+    public async Task<TodoItem> CreateAsync(TodoItem item)
+    {
+        // Lock the list of TodoItems to ensure thread safety
+        lock (_lock)
+        {
+            // Set the Id of the new TodoItem
+            item.Id = Guid.NewGuid();
 
-//     public void UpdateTodoItem(TodoItem todo)
-//     {
-//         if (todo == null)
-//         {
-//             throw new ArgumentNullException(nameof(todo));
-//         }
+            // Add the new TodoItem to the list
+            _todos.Add(item);
+        }
 
-//         var existingTodo = _todos.Find(t => t.Id == todo.Id);
-//         if (existingTodo != null)
-//         {
-//             existingTodo.Title = todo.Title;
-//             existingTodo.Description = todo.Description;
-//             existingTodo.IsCompleted = todo.IsCompleted;
-//         }
-//     }
+        // Return a copy of the new TodoItem to ensure immutability
+        return await GetByIdAsync(item.Id);
+    }
 
-//     public void DeleteTodoItem(Guid id)
-//     {
-//         var todo = _todos.Find(t => t.Id == id);
-//         if (todo != null)
-//         {
-//             _todos.Remove(todo);
-//         }
-//     }
-// }
+    public async Task<TodoItem> UpdateAsync(Guid id, TodoItem item)
+    {
+        // Lock the list of TodoItems to ensure thread safety
+        lock (_lock)
+        {
+            // Find the TodoItem with the specified Id
+            var todo = _todos.FirstOrDefault(t => t.Id == id) ?? throw new KeyNotFoundException($"TodoItem with Id {id} not found");
+
+            // Update the TodoItem
+            todo.Title = item.Title;
+            todo.IsComplete = item.IsComplete;
+        }
+
+        // Return a copy of the updated TodoItem to ensure immutability
+        return await GetByIdAsync(id);
+    }
+
+    public async Task<TodoItem> DeleteAsync(Guid id)
+    {
+        // Lock the list of TodoItems to ensure thread safety
+        var todo = new TodoItem();
+        lock (_lock)
+        {
+            // Find the TodoItem with the specified Id
+            var originalTodo = _todos.FirstOrDefault(t => t.Id == id) ?? throw new KeyNotFoundException($"TodoItem with Id {id} not found");
+
+            // Copy the TodoItem to ensure immutability
+            todo.Id = originalTodo.Id;
+            todo.Title = originalTodo.Title;
+            todo.IsComplete = originalTodo.IsComplete;
+
+            // Remove the TodoItem from the list
+            _todos.Remove(originalTodo);
+
+        }
+
+        // Return information about the deleted TodoItem
+        return await Task.FromResult(todo);
+    }
 }
