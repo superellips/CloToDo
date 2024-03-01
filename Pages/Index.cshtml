@@ -6,9 +6,10 @@
 
 <h3>Add ToDo</h3>
 
-<form> 
-    <input type="text" placeholder="Add a new ToDo" />
+<form method="post" asp-page-handler="AddTodo"> 
+    <input type="text" asp-for="NewTodo.Title" placeholder="Add a new ToDo" />
     <button type="submit">Add</button> 
+    <span asp-validation-for="NewTodo.Title" class="text-danger"   ></span>
 </form>
 
 <h3>ToDo List</h3>
@@ -19,3 +20,7 @@
         <li>@item.Title</li>
     }
 </ul>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

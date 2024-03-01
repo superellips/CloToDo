@@ -11,6 +11,10 @@ public class IndexModel : PageModel
     private readonly ITodoService _todoService;
     public IEnumerable<TodoItem> TodoItems { get; set; } = [];
 
+    // Model binding for the "Add Todo" form
+    [BindProperty]
+    public TodoItem NewTodo { get; set; } = new();
+
     public IndexModel(ILogger<IndexModel> logger, ITodoService todoService)
     {
         _logger = logger;
@@ -25,4 +29,19 @@ public class IndexModel : PageModel
         // Return the Page with the list of TodoItems
         return Page();
     }
+
+    public async Task<IActionResult> OnPostAddTodoAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        // Use the ITodoService to create a new TodoItem
+        await _todoService.CreateAsync(NewTodo);
+        
+        // Redirect to the same page to refresh the list of TodoItems
+        return RedirectToPage();
+    }
+
 }
