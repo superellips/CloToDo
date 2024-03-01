@@ -59,4 +59,21 @@ public class IndexModel : PageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostDeleteCompletedTodosAsync()
+    {
+        // Use the ITodoService to get all the TodoItems
+        var todoItems = await _todoService.GetAllAsync();
+
+        // Use LINQ to get all the completed TodoItems
+        var todosToDelete = todoItems.Where(t => t.IsComplete == true);
+        foreach (var todo in todosToDelete)
+        {
+            // Use the ITodoService to delete all the completed TodoItems
+            await _todoService.DeleteAsync(todo.Id);
+        }
+
+        // Redirect to the same page to refresh the list of TodoItems
+        return RedirectToPage();
+    }
+
 }

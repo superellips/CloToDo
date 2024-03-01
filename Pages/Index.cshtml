@@ -12,6 +12,12 @@
     <span asp-validation-for="NewTodo.Title" class="text-danger"   ></span>
 </form>
 
+<h3>Delete All Completed</h3>
+
+<form method="post" asp-page-handler="DeleteCompletedTodos">
+    <button type="submit">Delete Completed</button>
+</form>
+
 <h3>ToDo List</h3>
 
 <ul>
