@@ -4,32 +4,48 @@
     ViewData["Title"] = "Home page";
 }
 
-<h3>Add ToDo</h3>
+<div class="container mt-5">
 
-<form method="post" asp-page-handler="AddTodo"> 
-    <input type="text" asp-for="NewTodo.Title" placeholder="Add a new ToDo" />
-    <button type="submit">Add</button> 
-    <span asp-validation-for="NewTodo.Title" class="text-danger"   ></span>
-</form>
+    <!-- Add ToDo Card -->
+    <div class="card mb-3" >
+        <div class="card-header text-white bg-success">
+            <h3 class="card-title mb-1 mt-1">Add ToDo</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="AddTodo">
+                <input type="text" asp-for="NewTodo.Title" class="form-control" placeholder="Add a new ToDo"/>
+                <button type="submit" class="btn btn-primary mt-2">Add</button>
+                <span asp-validation-for="NewTodo.Title" class="text-danger"></span>
+            </form>
+        </div>
+    </div>
 
-<h3>Delete All Completed</h3>
-
-<form method="post" asp-page-handler="DeleteCompletedTodos">
-    <button type="submit">Delete Completed</button>
-</form>
-
-<h3>ToDo List</h3>
-
-<ul>
-    @foreach (var todoItem in Model.TodoItems)
-    {
-        <form method="post" asp-page-handler="ToggleTodoIsComplete">
-        <input type="hidden" name="id" value="@todoItem.Id" />
-        <input type="checkbox" asp-for="@todoItem.IsComplete" onchange="this.form.submit();"/>
-        @todoItem.Title
-        </form>
-    }
-</ul>
+    <!-- ToDo List Card -->
+    <div class="card bg-success">
+        <div class="card-header d-flex justify-content-between align-items-center text-white">
+            <h3 class="card-title mb-1 mt-1">ToDo List</h3>
+            <form method="post" asp-page-handler="DeleteCompletedTodos">
+                <button type="submit" class="btn btn-danger">Delete All Completed</button>
+            </form>
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach (var todoItem in Model.TodoItems)
+            {
+                <div class="list-group-item">
+                    <form method="post" asp-page-handler="ToggleTodoIsComplete">
+                        <input type="hidden" name="id" value="@todoItem.Id" />
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" asp-for="@todoItem.IsComplete" id="@todoItem.Id" onchange="this.form.submit();"/>
+                            <label class="form-check-label todo-item @(todoItem.IsComplete ? "done" : "")" for="@todoItem.Id">
+                                @todoItem.Title
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            }
+        </ul>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

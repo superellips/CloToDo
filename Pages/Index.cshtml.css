@@ -1,0 +1,6 @@
+/* Scoped styles for Index.cshtml */
+
+.todo-item.done {
+    text-decoration: line-through; /* Strikethrough */
+    color: gray; /* gray it out */
+}
