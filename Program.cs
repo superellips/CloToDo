@@ -5,8 +5,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container (Dependency Injection).
 builder.Services.AddRazorPages();
 
-// Add services to the container (Dependency Injection).
-builder.Services.AddSingleton<ITodoService, InMemDbTodoService>();
+// Read the TodoServiceImplementation from the configuration
+var todoServiceImplementation = builder.Configuration.GetValue<string>("TodoServiceImplementation");
+
+switch (todoServiceImplementation)
+{
+    case "MongoDb":
+        builder.Services.AddSingleton<ITodoService, MongoDbTodoService>();
+        Console.WriteLine("Using MongoDB TodoService");
+        break;
+    case "InMemDb":
+    default:
+        builder.Services.AddSingleton<ITodoService, InMemDbTodoService>();
+        Console.WriteLine("Using InMemDB TodoService");
+        break;
+}
+
 
 var app = builder.Build();
 
