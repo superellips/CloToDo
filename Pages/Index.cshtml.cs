@@ -44,4 +44,19 @@ public class IndexModel : PageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostToggleTodoIsCompleteAsync(Guid Id)
+    {
+        // Use the ITodoService to get the TodoItem by Id
+        var todo = await _todoService.GetByIdAsync(Id);
+
+        // Toggle the IsComplete property of the TodoItem
+        todo.IsComplete = !todo.IsComplete;
+
+        // Use the ITodoService to update the TodoItem
+        await _todoService.UpdateAsync(Id, todo);
+
+        // Redirect to the same page to refresh the list of TodoItems
+        return RedirectToPage();
+    }
+
 }

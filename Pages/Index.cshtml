@@ -15,9 +15,13 @@
 <h3>ToDo List</h3>
 
 <ul>
-    @foreach (var item in Model.TodoItems)
+    @foreach (var todoItem in Model.TodoItems)
     {
-        <li>@item.Title</li>
+        <form method="post" asp-page-handler="ToggleTodoIsComplete">
+        <input type="hidden" name="id" value="@todoItem.Id" />
+        <input type="checkbox" asp-for="@todoItem.IsComplete" onchange="this.form.submit();"/>
+        @todoItem.Title
+        </form>
     }
 </ul>
 
