@@ -8,4 +8,5 @@ public class TodoItem
     [Required(ErrorMessage = "The Title field is required")]
     public string? Title { get; set; }
     public bool IsComplete { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
 }

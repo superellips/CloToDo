@@ -9,6 +9,12 @@ builder.Services.AddRazorPages();
 // Add the MongoDB settings to the configuration
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
 
+// Add the BlobStorage settings to the configuration
+builder.Services.Configure<BlobStorageSettings>(builder.Configuration.GetSection("BlobStorageSettings"));
+
+// Add Azure image service
+builder.Services.AddSingleton<ITodoImageService, AzureBlobTodoImageService>();
+
 // Read the TodoServiceImplementation from the configuration
 var todoServiceImplementation = builder.Configuration.GetValue<string>("TodoServiceImplementation");
 

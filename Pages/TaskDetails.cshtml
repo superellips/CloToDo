@@ -6,3 +6,15 @@
 <p><strong>ID:</strong> @Model.TodoItem.Id</p>
 <p><strong>Description:</strong> @Model.TodoItem.Title</p>
 <p><strong>Completed:</strong> @Model.TodoItem.IsComplete</p>
+<p><strong>ImageURL:</strong> @Model.TodoItem.ImageUrl</p>
+
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" asp-for="@Model.TodoItem.Id" />
+    <input type="file" name="imageFile" accept="image/*" /> 
+    <button type="submit">Upload Image</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.TodoItem.ImageUrl))
+{
+    <img width="300" alt="Task Image" src="@Model.TodoItem.ImageUrl" />
+}

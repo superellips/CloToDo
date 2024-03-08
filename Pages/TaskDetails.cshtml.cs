@@ -9,6 +9,7 @@ public class TaskDetailsModel : PageModel
 {
     private readonly ILogger<TaskDetailsModel> _logger;
     private readonly ITodoService _todoService;
+    private readonly ITodoImageService _todoImageService;
 
     // This property binds to the route data automatically.
     // [BindProperty(SupportsGet = true)]
@@ -16,10 +17,11 @@ public class TaskDetailsModel : PageModel
 
     public TodoItem TodoItem { get; set; } = new TodoItem();
 
-    public TaskDetailsModel(ILogger<TaskDetailsModel> logger, ITodoService todoService)
+    public TaskDetailsModel(ILogger<TaskDetailsModel> logger, ITodoService todoService, ITodoImageService todoImageService)
     {
         _logger = logger;
         _todoService = todoService;
+        _todoImageService = todoImageService;
     }
 
     // public async Task<IActionResult> OnGetAsync()
@@ -34,4 +36,18 @@ public class TaskDetailsModel : PageModel
 
         return Page();
     }
+
+    public async Task<IActionResult> OnPostAsync(Guid id, IFormFile imageFile)
+    {
+        var todoItem = await _todoService.GetByIdAsync(id);
+
+        if (imageFile != null)
+        {
+           todoItem.ImageUrl = await _todoImageService.UploadImageAsync(imageFile);
+           await _todoService.UpdateAsync(id, todoItem);
+        }
+
+        return RedirectToPage(); // Refresh the page to show the updated details
+    }
+
 }
