@@ -1,5 +1,7 @@
 using MongoDB.Driver;
 using CloToDo.Models;
+using Microsoft.Extensions.Options;
+using CloToDo.Configuration;
 
 namespace CloToDo.Services;
 
@@ -7,16 +9,16 @@ public class MongoDbTodoService : ITodoService
 {
     private readonly IMongoCollection<TodoItem> _todoItems;
 
-    public MongoDbTodoService()
+    public MongoDbTodoService(IOptions<MongoDBSettings> options)
     {
         // Create a MongoClient object by passing the connection string
-        var client = new MongoClient("mongodb://localhost:27017"); // Hardcoded connection string
+        var client = new MongoClient(options.Value.ConnectionString); // Hardcoded connection string
 
         // Get the database (creates if it doesn't exist)
-        var database = client.GetDatabase("TodoDb");
+        var database = client.GetDatabase(options.Value.DatabaseName);
 
         // Get the collection (creates if it doesn't exist)
-        _todoItems = database.GetCollection<TodoItem>("TodoItems");
+        _todoItems = database.GetCollection<TodoItem>(options.Value.CollectionName);
     }
 
     public async Task<IEnumerable<TodoItem>> GetAllAsync()

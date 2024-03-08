@@ -1,9 +1,13 @@
+using CloToDo.Configuration;
 using CloToDo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container (Dependency Injection).
 builder.Services.AddRazorPages();
+
+// Add the MongoDB settings to the configuration
+builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
 
 // Read the TodoServiceImplementation from the configuration
 var todoServiceImplementation = builder.Configuration.GetValue<string>("TodoServiceImplementation");
