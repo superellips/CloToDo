@@ -32,6 +32,7 @@
             @foreach (var todoItem in Model.TodoItems)
             {
                 <div class="list-group-item">
+                    <a asp-page="/TaskDetails" asp-route-id="@todoItem.Id" style="color: inherit; text-decoration: none;">
                     <form method="post" asp-page-handler="ToggleTodoIsComplete">
                         <input type="hidden" name="id" value="@todoItem.Id" />
                         <div class="form-check">
@@ -41,6 +42,7 @@
                             </label>
                         </div>
                     </form>
+                    </a>
                 </div>
             }
         </ul>

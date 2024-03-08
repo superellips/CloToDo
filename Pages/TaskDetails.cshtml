@@ -1,0 +1,8 @@
+@page "{id:guid}"  
+@model TaskDetailsModel 
+
+<h1>Task Details</h1>
+
+<p><strong>ID:</strong> @Model.TodoItem.Id</p>
+<p><strong>Description:</strong> @Model.TodoItem.Title</p>
+<p><strong>Completed:</strong> @Model.TodoItem.IsComplete</p>
